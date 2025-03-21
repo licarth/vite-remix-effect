@@ -15,7 +15,7 @@ export const HoneycombConfig = Config.nested("HONEYCOMB")(
 );
 
 export const TracingLive = Layer.unwrapEffect(
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const { apiKey, serviceName } = yield* HoneycombConfig;
 
     const headers = {

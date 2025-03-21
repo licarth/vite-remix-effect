@@ -1,7 +1,7 @@
+import { NodeContext } from "@effect/platform-node";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Effect, Layer, ManagedRuntime, pipe } from "effect";
 import { ActionContext, LoaderContext } from "~/services/Remix";
-import { NodeContext, NodeRuntime } from "@effect/platform-node";
 
 export const remixRuntime = <A, E>(
   layer: Layer.Layer<A, E, NodeContext.NodeContext>

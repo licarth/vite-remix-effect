@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply bg-white dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  h1 {
+    @apply text-3xl font-bold tracking-tight mb-2;
+  }
+  h2 {
+    @apply text-2xl font-semibold tracking-tight mb-2;
+  }
+}

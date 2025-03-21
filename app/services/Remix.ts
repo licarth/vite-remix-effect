@@ -1,6 +1,5 @@
-import { Schema as S } from "effect";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { Context, Effect } from "effect";
+import { Context, Effect, Schema as S } from "effect";
 
 export class LoaderContext extends Context.Tag("LoaderContext")<
   LoaderContext,
