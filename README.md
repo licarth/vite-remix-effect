@@ -89,9 +89,9 @@ export default function Component() {
 The project uses 4 main libraries of the effect ecosystem:
 
 - `effect` to handle all effectful operations
-- `@effect/schema` to define data models and handle serialization
+- `effect/Schema` to define data models and handle serialization
 - `@effect/opentelemetry` to integrate with a telemetry dashboard
-- `@sqlfx/sqlite` to integrate with sqlite
+- `@effect/sql-sqlite-node` to integrate with sqlite
 
 As of telemetry for simplicity we are using [https://www.honeycomb.io/](https://www.honeycomb.io/) but any open telemetry compatible service will work with minor changes to the code
 

@@ -1,4 +1,4 @@
-import { Schema } from "@effect/schema";
+import { Schema } from "effect";
 import type { MetaFunction } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { Effect } from "effect";
@@ -8,20 +8,20 @@ import { effectAction, effectLoader } from "~/services/Runtime";
 import type { Todo } from "~/services/TodoRepo";
 import { TodoArray, TodoRepo } from "~/services/TodoRepo";
 
-const ActionInput = Schema.union(
-  Schema.struct({
-    _tag: Schema.literal("AddTodo"),
-    title: Schema.string,
+const ActionInput = Schema.Union(
+  Schema.Struct({
+    _tag: Schema.Literal("AddTodo"),
+    title: Schema.String,
   }),
-  Schema.struct({
-    _tag: Schema.literal("DeleteTodo"),
-    id: Schema.numberFromString(Schema.string),
+  Schema.Struct({
+    _tag: Schema.Literal("DeleteTodo"),
+    id: Schema.NumberFromString,
   })
 );
 
 export const action = effectAction(
   Effect.gen(function* ($) {
-    const { addTodo, deleteTodo } = yield* $(TodoRepo);
+    const { addTodo, deleteTodo } = yield* TodoRepo;
     const input = yield* $(getFormData(ActionInput));
     switch (input._tag) {
       case "AddTodo": {
@@ -59,7 +59,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-function TodoRow({ todo }: { todo: Schema.Schema.From<typeof Todo> }) {
+function TodoRow({ todo }: { todo: Schema.Schema.Encoded<typeof Todo> }) {
   const fetcher = useFetcher<typeof action>();
   const deleteTodoForm = useRef<HTMLFormElement>(null);
 

@@ -12,8 +12,10 @@
     "clean": "rm -rf build && rm -rf public/build && rm -rf node_modules/.vite"
   },
   "dependencies": {
-    "@effect/opentelemetry": "^0.22.1",
-    "@effect/schema": "^0.47.7",
+    "@effect/opentelemetry": "^0.45.1",
+    "@effect/platform-node": "^0.76.1",
+    "@effect/sql": "^0.33.1",
+    "@effect/sql-sqlite-node": "^0.34.1",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/context-async-hooks": "^1.18.1",
     "@opentelemetry/exporter-metrics-otlp-proto": "^0.45.1",
@@ -26,10 +28,9 @@
     "@opentelemetry/sdk-trace-base": "^1.18.1",
     "@remix-run/react": "^2.2.0",
     "@remix-run/serve": "^2.2.0",
-    "@sqlfx/sqlite": "^0.30.3",
     "better-sqlite3": "^9.1.1",
     "dotenv": "^16.3.1",
-    "effect": "2.0.0-next.54",
+    "effect": "3.14.1",
     "isbot": "^3.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

@@ -1,24 +1,16 @@
-import { Schema } from "@effect/schema";
+import { Schema as S } from "effect";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Context, Effect } from "effect";
 
-export interface LoaderContext {
-  readonly _: unique symbol;
-}
-
-export const LoaderContext = Context.Tag<
+export class LoaderContext extends Context.Tag("LoaderContext")<
   LoaderContext,
   Parameters<LoaderFunction>[0]
->("@services/LoaderContext");
+>() {}
 
-export interface ActionContext {
-  readonly _: unique symbol;
-}
-
-export const ActionContext = Context.Tag<
+export class ActionContext extends Context.Tag("@services/ActionContext")<
   ActionContext,
   Parameters<ActionFunction>[0]
->("@services/ActionContext");
+>() {}
 
 export const getFormDataEntries = ActionContext.pipe(
   Effect.flatMap(({ request }) => Effect.promise(() => request.formData())),
@@ -26,7 +18,7 @@ export const getFormDataEntries = ActionContext.pipe(
   Effect.withSpan("getFormDataEntries")
 );
 
-export const getFormData = <I, A>(schema: Schema.Schema<I, A>) =>
+export const getFormData = <A, I>(schema: S.Schema<A, I>) =>
   Effect.flatMap(getFormDataEntries, (entries) =>
-    Schema.parse(schema)(entries).pipe(Effect.withSpan("parseFormData"))
+    S.decodeUnknown(schema)(entries).pipe(Effect.withSpan("parseFormData"))
   ).pipe(Effect.withSpan("getFormData"));

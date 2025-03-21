@@ -1,4 +1,4 @@
-import { Schema } from "@effect/schema";
+import { SqlClient } from "@effect/sql";
 import {
   Context,
   Data,
@@ -6,21 +6,23 @@ import {
   Effect,
   Layer,
   Metric,
+  pipe,
   Schedule,
+  Schema,
 } from "effect";
-import { Sql, SqlLive } from "./Sql";
+import { SqlLive } from "./Sql";
 
 //
 // Data Model
 //
 
-export class Todo extends Schema.Class<Todo>()({
-  id: Schema.number,
-  title: Schema.string,
-  createdAt: Schema.dateFromString(Schema.string),
+export class Todo extends Schema.Class<Todo>("Todo")({
+  id: Schema.Number,
+  title: Schema.String,
+  createdAt: Schema.DateFromString,
 }) {}
 
-export const TodoArray = Schema.array(Todo);
+export const TodoArray = Schema.Array(Todo);
 
 export class GetAllTodosError extends Data.TaggedError("GetAllTodosError")<{
   message: string;
@@ -47,21 +49,17 @@ const deleteTodoErrorCount = Metric.counter("deleteTodoErrorCount");
 // Service Definition
 //
 
-export interface TodoRepo {
-  readonly _: unique symbol;
-}
-
-export const TodoRepo = Context.Tag<
+export class TodoRepo extends Context.Tag("@context/Todos")<
   TodoRepo,
   Effect.Effect.Success<typeof makeTodoRepo>
->("@context/Todos");
+>() {}
 
 //
 // Service Implementation
 //
 
 export const makeTodoRepo = Effect.gen(function* ($) {
-  const sql = yield* $(Sql);
+  const sql = yield* $(SqlClient.SqlClient);
 
   const addTodo = (title: string) =>
     Effect.gen(function* ($) {
@@ -72,7 +70,7 @@ export const makeTodoRepo = Effect.gen(function* ($) {
         Effect.withSpan("addTodoToDb")
       );
       const [todo] = yield* $(
-        Effect.orDie(Schema.parse(Schema.tuple(Todo))(rows)),
+        Effect.orDie(Schema.decodeUnknown(Schema.Tuple(Todo))(rows)),
         Effect.withSpan("parseResponse")
       );
       return todo;
@@ -100,7 +98,7 @@ export const makeTodoRepo = Effect.gen(function* ($) {
       Effect.withSpan("getFromDb")
     );
     const todos = yield* $(
-      Effect.orDie(Schema.parse(TodoArray)(rows)),
+      Effect.orDie(Schema.decodeUnknown(TodoArray)(rows)),
       Effect.withSpan("parseTodos")
     );
     if (Math.random() > 0.5) {
@@ -125,7 +123,7 @@ export const makeTodoRepo = Effect.gen(function* ($) {
   };
 });
 
-export const TodoRepoLive = Layer.provide(
-  SqlLive,
-  Layer.effect(TodoRepo, makeTodoRepo)
+export const TodoRepoLive = pipe(
+  Layer.effect(TodoRepo, makeTodoRepo),
+  Layer.provide(SqlLive)
 );

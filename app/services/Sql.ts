@@ -1,18 +1,18 @@
-import * as Sqlfx from "@sqlfx/sqlite/node";
-import * as Migrator from "@sqlfx/sqlite/Migrator";
-import { Config, Layer } from "effect";
+import { Config, Layer, pipe, String } from "effect";
 
-export const Sql = Sqlfx.tag;
+import { SqliteClient, SqliteMigrator } from "@effect/sql-sqlite-node";
 
 const migrations = import.meta.glob("../migrations/*.ts");
 
-export const SqlLive = Layer.provideMerge(
-  Sqlfx.makeLayer({
-    filename: Config.succeed("database/db.sqlite"),
-    transformQueryNames: Config.succeed(Sqlfx.transform.camelToSnake),
-    transformResultNames: Config.succeed(Sqlfx.transform.snakeToCamel),
+export const SqlLive = pipe(
+  SqliteMigrator.layer({
+    loader: SqliteMigrator.fromGlob(migrations),
   }),
-  Migrator.makeLayer({
-    loader: Migrator.fromGlob(migrations),
-  })
+  Layer.provideMerge(
+    SqliteClient.layerConfig({
+      filename: Config.succeed("database/db.sqlite"),
+      transformQueryNames: Config.succeed(String.camelToSnake),
+      transformResultNames: Config.succeed(String.snakeToCamel),
+    })
+  )
 ).pipe(Layer.orDie);
